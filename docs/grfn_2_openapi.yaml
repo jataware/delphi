@@ -17,33 +17,35 @@ components:
 
   schemas:
 
-    grfn_def:
-      title: <grfn_def>
+    grfn:
+      title: <grfn>
       description: >
         Top-level structure.
         A <grfn_def> corresponds to a namespace.
       required:
+        - uid
         - date_created
-        - source
-        - vertices
+        - functions
+        - variables
         - edges
         - containers
       properties:
+        uid:
+          type: string
+          description: unique identifier
         date_created:
           type: string
           format: date-time
           description: >
             Date and time that current GrFN was generated.
-        source:
-          description:
-            Path(s) to source code file(s) that were analyzed.
+        variables:
           type: array
           items:
-            $ref: '#/components/schemas/file_path'
-        vertices:
+            $ref: '#/components/schemas/variable'
+        functions:
           type: array
           items:
-            $ref: '#/components/schemas/vertex'
+            $ref: '#/components/schemas/function'
         edges:
           type: array
           items:
@@ -52,94 +54,117 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/container'
-        grounding:
-          type: array
-          items:
-            $ref: '#/components/schemas/link_hypothesis'
-
-    vertex:
-      title: <vertex>
-      description: GrFN vertex
-      oneOf:
-        - $ref: '#/components/schemas/variable_def'
-        - $ref: '#/components/schemas/function_ref'
 
     edge:
       title: <edge>
       description: GrFN edge
+      required:
+      - in
+      - function
+      - out
       properties:
         in:
-          $ref: '#/components/schemas/vertex'
-        in_var:
-          $ref: '#/components/schemas/variable_identifier_name'
+          type: array
+          items:
+            $ref: '#/components/schemas/variable_identifier'
+        function:
+          $ref: '#/components/schemas/function_identifier'
         out:
-          $ref: '#/components/schemas/vertex'
-        out_var:
-          $ref: '#/components/schemas/variable_identifier_name'
+          type: array
+          items:
+            $ref: '#/components/schemas/variable_identifier'
 
-    link_hypothesis:
-      title: <link_hypothesis>
-      description: >
-        A commutative binary relation representing a hypothesized
-        link between two <semantic_element>s:
-          (elm1=A, elm2=B) == (elm1=B, elm2=A)
+    variable:
+      title: <variable>
+      description: A representation of a variable extracted from source code
       required:
-        - element_1
-        - element_2
-        - score
+        - name
+        - uid
+        - reference
       properties:
-        element_1:
-          $ref: '#/components/schemas/link_element'
-        element_2:
-          $ref: '#/components/schemas/link_element'
-        score:
-          type: number
-          format: float
+        name:
+          type: string
+          description: variable basename and index extracted from source code
+        uid:
+          type: string
+          description: variable unique identifier
+        reference:
+          type: string
+          description: grounding reference to scientific variable ontology
+        data-type:
+          type: object
+          description: TODO -- not sure how to do this section
 
-    link_element:
-      title: <link_element>
-      description: >
-        A grounding hypothesis link element.<br>
-        "type": identifier (<variable_identifier_name>,
-        <function_identifier_name>, <type_identifier_name>),
-        content_span, text_span, equation_term, or ontology_term
+    function:
+      title: <function>
+      description: A representation of a functional computation extracted from source code
       required:
+        - uid
         - type
-        - content
+        - reference
+        - lambda
       properties:
+        uid:
+          type: string
+          description: function unique identifier
         type:
           type: string
-          enum:
-            - identifier
-            - comment_span
-            - text_span
-            - equation_term
-            - ontology_term
-        source:
+          description: states the type of function being computed by this function node
+        reference:
           type: string
-        content:
+          description: grounding reference to scientific variable ontology
+        lambda:
           type: string
-        content_type:
-          type: string
-          enum:
-            - definition
-            - units
-            - constraint
-
-    variable_def:
-      title: <variable_def>
-      description: >
-        TODO
-
-    function_ref:
-      title: <function_ref>
-      description: >
-        TODO
+          description: stringified pythonic version of the lambda function code
 
     container:
       title: <container>
       description: >
         TODO
+      required:
+        - name
+        - parent
+        - exit
+        - vertices
+      properties:
+        name:
+          type: string
+          description: a reference to the container that shows the original module path, scope path, and container name
+        parent:
+          type: string
+          description: the container name for the parent container to this container
+        exit:
+          type: string
+          description: a function unique identifier for the lambda function that computes the exit condition
+        vertices:
+          type: array
+          description: TODO -- not sure how to do this section
+
+    data-type:
+      title: <data-type>
+      description: TODO -- fill in this to define the data type field
+      required:
+        - name
+        - type
+        - domain
+      properties:
+        name:
+          type: string
+          description: the type name of the data field used in Python/NumPy
+        type:
+          type: string
+          description: the scale of this data-type binary/categorical/discrete/continuous
+        domain:
+          type: array
+          description: TODO -- fill in this section
+
+    variable_identifier:
+      title: <variable_identifier>
+      description: variable unique identifier
+
+    function_identifier:
+      title: <function_identifier>
+      description: function unique identifier
 
     file_path:
       title: <file_path>

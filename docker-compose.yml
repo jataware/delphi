@@ -1,0 +1,8 @@
+# A Docker Compose file for running Delphi
+
+version: '3'
+services:
+  delphi:
+    image: delphi:latest
+    container_name: delphi
+    build: .

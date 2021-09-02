@@ -208,6 +208,8 @@ class Experiment {
 };
 
 int main(int argc, const char* argv[]) {
+    cout << "delphi_rest_api.main" << endl;
+
     Database* sqlite3DB = new Database();
     Experiment* experiment = new Experiment();
 
@@ -264,6 +266,9 @@ int main(int argc, const char* argv[]) {
             }
 
             string model = query_result["model"];
+
+	    cout << "Model: " << model << endl;
+
             bool trained = nlohmann::json::parse(model)["trained"];
 
             if (trained == false) {
@@ -341,8 +346,10 @@ int main(int argc, const char* argv[]) {
              some kind of heuristic, based on the number of nodes and edges. -
              Adarsh
             */
-            size_t kde_kernels = 1000;
-            int sampling_resolution = 1000, burn = 10000;
+//            size_t kde_kernels = 1000;
+            size_t kde_kernels = 100;  // TODO remove before flight
+//            int sampling_resolution = 1000, burn = 10000;
+            int sampling_resolution = 100, burn = 1000;  // TODO remove before flight
             if (getenv("CI")) {
                 // When running in a continuous integration run, we set the
                 // sampling resolution to be small to prevent timeouts.
@@ -360,7 +367,8 @@ int main(int argc, const char* argv[]) {
             }
 
             // ------------------
-            burn = 100;
+	    // burn = 100;
+	    burn = 10;  // TODO remove before flight
             // ------------------
 
             AnalysisGraph G;

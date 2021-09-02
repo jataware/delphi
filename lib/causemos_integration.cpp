@@ -656,6 +656,7 @@ AnalysisGraph AnalysisGraph::from_causemos_json_file(string filename,
  * errors into this response.
  */
 string AnalysisGraph::generate_create_model_response() {
+    printf("AnalysisGraph::generate_create_model_response\n");
     using nlohmann::json, ranges::max;
 
     json j;
@@ -703,6 +704,7 @@ AnalysisGraph::run_causemos_projection_experiment_from_json_string(
                                                            string json_string) {
     using namespace fmt::literals;
     using nlohmann::json;
+    printf("AnalysisGraph::run_causemos_projection_experiment_from_json_string\n");
 
 
     // During the create-model call we called construct_theta_pdfs() and

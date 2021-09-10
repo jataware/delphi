@@ -22,6 +22,43 @@ using json = nlohmann::json;
     =====================
 */
 
+
+// find computational bottlenecks
+class Profiler {
+    public:
+
+	// let the user know the class has been instantiated
+	static void test(){
+            cout << "Profiler running\n";
+	}
+
+        // Test how long it takes to get an arbitrary model created
+        static int initTiming(
+	    Database* sqlite3DB,
+            const served::request& request
+	) {
+	    cout << "ProfileExperiment.initTiming\n";
+
+	    // let the compiler figure out the datatype particulars
+            auto request_body = nlohmann::json::parse(request.body());
+
+	    // These are set, they are not the profile data
+            double startTime = request_body["experimentParam"]["startTime"];
+            double endTime = request_body["experimentParam"]["endTime"];
+
+	    return endTime-startTime;
+	}
+
+	// watch resources
+	~Profiler() {
+            cout << "Profiler destructor\n";
+	}
+
+     private:
+	int n_iterations = 0;  // should be set by input
+};
+
+
 class Experiment {
     public:
     /* a function to generate numpy's linspace */
@@ -215,6 +252,25 @@ int main(int argc, const char* argv[]) {
 
     served::multiplexer mux;
 
+
+    /* Test the served response timing */
+    mux.handle("/database/profiler")
+        .post([&sqlite3DB](served::response& res, const served::request& req) {
+
+        Profiler* profiler = new Profiler();
+        profiler->test();  // validate instantiation
+
+	cout << "delphi_rest_api.database.profiler\n";
+
+        json ret_exp;
+        ret_exp["experimentId"] ="db_query=profile";
+
+	delete profiler;
+
+        return ret_exp;
+    });
+
+
     /*
          """ Fetch experiment results"""
          Get asynchronous response while the experiment is being trained from
@@ -333,11 +389,21 @@ int main(int argc, const char* argv[]) {
             res << response.dump();
         });
 
-    /* Create a new Delphi model. */
+    /* Create a new Delphi model. You could test this from the command line with 
+     * a call like: curl -X POST "http://localhost:8123/delphi/create-model" -d @tests/data/delphi/causemos_create-model.json --header "Content-Type: application/json";
+     *
+     *
+     *
+     *
+     *
+     * */
     mux.handle("/delphi/create-model")
         .post([&sqlite3DB](served::response& response,
                            const served::request& req) {
             nlohmann::json json_data = nlohmann::json::parse(req.body());
+
+	    cout << "delphi_rest_api.main./delphi/create-model\n";
+
             /*
              If neither "CI" or "DELPHI_N_SAMPLES" is set, we default to a
              sampling resolution of 1000.

@@ -45,12 +45,18 @@ class KDE {
   public:
   KDE(){};
   std::vector<double> dataset;
+  std::vector<double> dataset2;
+  std::vector<double> dataset3;
   double bw; // bandwidth
   KDE(std::vector<double>);
 
   // TODO: Made this public just to initialize β.
   // Not sure this is the correct way to do it.
   double mu;
+  double den;
+  double nrm;
+  int counter;
+  int sz;
 
   std::vector<double> resample(int n_samples,
                                std::mt19937& rng,

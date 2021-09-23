@@ -145,3 +145,11 @@ G.run_train_model(
 )
 
 preds = G.run_causemos_projection_experiment_from_json_file(filename=causemos_create_experiment)
+
+acc = 0
+for k in preds.keys():
+    for vv in preds[k]:
+        acc += sum(vv)
+
+print()
+print(f'acc={acc}')

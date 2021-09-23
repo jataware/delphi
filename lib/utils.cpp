@@ -10,11 +10,6 @@ using namespace std;
 namespace delphi::utils {
 
 /**
- * Returns the square of a number.
- */
-double sqr(double x) { return x * x; }
-
-/**
  * Returns the sum of a vector of doubles.
  */
 double sum(const std::vector<double> &v) { return boost::accumulate(v, 0.0); }

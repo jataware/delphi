@@ -295,7 +295,7 @@ double AnalysisGraph::calculate_delta_log_prior() {
     // A θ has been sampled
     KDE& kde = this->graph[this->previous_theta.first].kde;
 
-    // We have to return: log( p( θ_new )) - log( p( θ_old ))
+    // We have to return: log( p( θ_new )) - log( p( θ_old ))      
     return kde.logpdf(this->graph[this->previous_theta.first].theta) -
            kde.logpdf(this->previous_theta.second);
   }

@@ -139,6 +139,7 @@ G.set_random_seed(81)
 G.run_train_model(
     res                = 200,
     burn               = 1000,
+    # burn = 100,
     initial_beta       = InitialBeta.ZERO,
     initial_derivative = InitialDerivative.DERI_ZERO,
     use_continuous     = True
